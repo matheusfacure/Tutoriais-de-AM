@@ -12,29 +12,35 @@ class linear_regr(object):
 	def __init__(self):
 		pass
 
-	def fit(self, X, y):
+
+	def fit(self, X_train, y_train):
 		# adiciona coluna de 1 para achar intercepto
-		X = np.insert(X, 0, 1, 1)
+		X = np.insert(X_train, 0, 1, 1)
 
 		# estima os betas
 		# Fórmula por álgebra linear:
 		# https://en.wikipedia.org/wiki/Linear_regression#Estimation_methods
-		betas = np.dot( np.dot( np.linalg.inv(np.dot(X.T, X)), X.T), y)
+		betas = np.dot( np.dot( np.linalg.inv(np.dot(X.T, X)), X.T), y_train)
 		
 		self.betas = betas
 		self.coef = self.betas[1:]
 		self.intercept = self.betas[0]
 
 
-	def score(self, X, y):
-		X = np.insert(X, 0, 1, 1)
-		self.y_pred = np.dot(X, self.betas)
-		self.sqr_err = (y - self.y_pred) ** 2
+	def predict(self, X_test):
+		X = np.insert(X_test, 0, 1, 1)
+		y_pred = np.dot(X, self.betas)
+		return y_pred
+
+
+	def score(self, X_test, y_test):
+		y_pred =  self.predict(X_test)
+		self.sqr_err = (y_test - y_pred) ** 2
 		
 		# R^2
-		self.score = ( np.sum( (self.y_pred - np.mean(y)) ** 2)  /
-						np.sum( (y - np.mean(y)) ** 2) ) 
-		return(self.score)
+		score = ( np.sum( (y_pred - np.mean(y_test)) ** 2)  /
+						np.sum( (y_test - np.mean(y_test)) ** 2) ) 
+		return(score)
 
 
 
@@ -62,7 +68,7 @@ if __name__ == '__main__':
 	# separa em treino e teste
 	X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y,
 																test_size=0.2)
-	
+
 	print('Aplicando o regressor criado manualmente')
 	t0 = time()
 	regr = linear_regr()

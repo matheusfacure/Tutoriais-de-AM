@@ -25,7 +25,56 @@ def test_cluster(clf, data):
 	plt.show()
 
 
+class k_means(object):
 
+	def __init__(self, k, tol = 0.0001, max_iter = 10):
+		self.k = k
+		self.tol = tol
+		self.max_iter = max_iter
+
+
+	def fit(self, data):
+
+		# seleciona os centros aleatoriamente para começar
+		rand_k = [np.random.randint(0, len(data)) for rand in range(self.k)]
+		self.cluster_centers_ = data.ix[rand_k, :].values
+
+
+		for _ in range(self.max_iter):
+
+			# cria classes vazias para serem povoadas
+			classes = {}
+			for i in range(self.k):
+				classes[i] = []
+
+			# acha que ponto pertence a que centro
+			for i in data.values:
+
+				# acha a cistância entre a observação i e cada centro
+				dist = [np.linalg.norm(i-j) for j in self.cluster_centers_]
+					
+				# classifica a observação i a um centro
+				clas = dist.index(min(dist))
+				classes[clas].append(i)
+
+			# cira centro antigo para verificar otimização.
+			# passa por cópia e ñ por referência
+			prev_centers = np.array(self.cluster_centers_)
+
+			# atualiza os centros
+			for i, _ in enumerate(self.cluster_centers_):
+				self.cluster_centers_[i] = np.array(classes[i]).mean(axis=0)
+
+			# verifica convergência
+			var = np.sum((self.cluster_centers_ - prev_centers) / 
+						prev_centers*100.0)
+			
+			if var < self.tol:
+				break
+
+
+
+		
 
 
 
@@ -42,13 +91,18 @@ if __name__ == '__main__':
 	data = pd.read_csv('hprice.csv', sep=',', usecols = ['price', 'sqrft'])
 	data.fillna(-99999, inplace = True)
 
+	
+	# Testa regressor criado manualmente
 	print('\nResultados do criado manualmente')
-	# Compara o regressor com o do sklearn
-	clf = cluster.KMeans(n_clusters=3)
+	clf = k_means(k=3)
+	clf.fit(data)
+	print(clf.cluster_centers_)
 	test_cluster(clf, data)
 
 
-	print('\nComparando com os resultados do Sklearn')
-	# Compara o regressor com o do sklearn
-	clf = cluster.KMeans(n_clusters=3)
-	test_cluster(clf, data)
+	# # Compara o regressor com o do sklearn
+	# print('\nComparando com os resultados do Sklearn')
+	# clf = cluster.KMeans(n_clusters=3)
+	# clf.fit(data)
+	# print(clf.cluster_centers_)
+	# test_cluster(clf, data)

@@ -14,26 +14,34 @@ def test_cluster(clf, data):
 	centroids = clf.cluster_centers_
 	print("Tempo:", round(time()-t0, 3), "s")
 
-	# plotando os resultados
-	plt.figure()
-	ax1 = plt.subplot2grid((1,1), (0,0))
-	data.plot.scatter(x='sqrft', y='price', alpha=1, s=45,
-		label=None, ax = ax1)
-	plt.scatter(centroids[:, 1], centroids[:, 0],
-            marker='*', s=100, linewidths=3,
-            color='k', zorder=10)
+	colors = 10*["g","r","c","b","k"]
+	
+	for color, feature in zip(clf.labels_, data.values):
+		plt.scatter(feature[0], feature[1], color=colors[color], s=35)
+	
+	for c in range(len(clf.cluster_centers_)):
+		plt.scatter(centroids[c][0], centroids[c][1],
+					marker="o", color="k", s=50, linewidths=5)
+	
+	labels = data.columns
+	plt.xlabel(labels[0])
+	plt.ylabel(labels[1])
+
+
 	plt.show()
 
 
 class k_means(object):
 
-	def __init__(self, k, tol = 0.0001, max_iter = 10):
+	def __init__(self, k, tol = 0.0001, max_iter = 500):
 		self.k = k
 		self.tol = tol
 		self.max_iter = max_iter
 
 
 	def fit(self, data):
+
+		self.labels_ = np.zeros(shape=(len(data)))
 
 		# seleciona os centros aleatoriamente para começar
 		rand_k = [np.random.randint(0, len(data)) for rand in range(self.k)]
@@ -43,19 +51,20 @@ class k_means(object):
 		for _ in range(self.max_iter):
 
 			# cria classes vazias para serem povoadas
-			classes = {}
+			temp_class = {}
 			for i in range(self.k):
-				classes[i] = []
+				temp_class[i] = []
 
 			# acha que ponto pertence a que centro
-			for i in data.values:
+			for j, i in enumerate(data.values):
 
 				# acha a cistância entre a observação i e cada centro
 				dist = [np.linalg.norm(i-j) for j in self.cluster_centers_]
 					
 				# classifica a observação i a um centro
 				clas = dist.index(min(dist))
-				classes[clas].append(i)
+				temp_class[clas].append(i)
+				self.labels_[j] = clas
 
 			# cira centro antigo para verificar otimização.
 			# passa por cópia e ñ por referência
@@ -63,7 +72,7 @@ class k_means(object):
 
 			# atualiza os centros
 			for i, _ in enumerate(self.cluster_centers_):
-				self.cluster_centers_[i] = np.array(classes[i]).mean(axis=0)
+				self.cluster_centers_[i] = np.array(temp_class[i]).mean(axis=0)
 
 			# verifica convergência
 			var = np.sum((self.cluster_centers_ - prev_centers) / 
@@ -72,12 +81,9 @@ class k_means(object):
 			if var < self.tol:
 				break
 
-
-
-		
-
-
-
+		# converta as classes para ints
+		self.labels_ = self.labels_.astype(int)
+	
 
 
 
@@ -100,9 +106,9 @@ if __name__ == '__main__':
 	test_cluster(clf, data)
 
 
-	# # Compara o regressor com o do sklearn
-	# print('\nComparando com os resultados do Sklearn')
-	# clf = cluster.KMeans(n_clusters=3)
-	# clf.fit(data)
-	# print(clf.cluster_centers_)
-	# test_cluster(clf, data)
+	# Compara o regressor com o do sklearn
+	print('\nComparando com os resultados do Sklearn')
+	clf = cluster.KMeans(n_clusters=3)
+	clf.fit(data)
+	print(clf.cluster_centers_)
+	test_cluster(clf, data)

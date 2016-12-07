@@ -68,6 +68,7 @@ if __name__ == '__main__':
 	X = np.array(data.drop(['class'], 1))
 	y = np.array(data['class'])
 	
+	
 	# separa em treino e teste
 	X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y,
 																test_size=0.2)

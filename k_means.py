@@ -59,7 +59,7 @@ class k_means(object):
 			for j, i in enumerate(data.values):
 
 				# acha a cistância entre a observação i e cada centro
-				dist = [np.linalg.norm(i-j) for j in self.cluster_centers_]
+				dist = [np.linalg.norm(i-j) ** 2 for j in self.cluster_centers_]
 					
 				# classifica a observação i a um centro
 				clas = dist.index(min(dist))

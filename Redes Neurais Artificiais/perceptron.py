@@ -13,7 +13,6 @@ class perceptron(object):
 		self.plot_ = plot_
 		self.w = w
 
-
 	def __update_w(self, X_train, y_train):
 
 		for xi, yi in zip(X_train, y_train):
@@ -48,6 +47,7 @@ class perceptron(object):
 			plt.plot(l, a*l+b, '-k')
 
 		plt.show()
+		plt.clf()
 
 
 	def fit(self, X_train, y_train):

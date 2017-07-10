@@ -1,6 +1,8 @@
 import numpy as np # para computação numérica menos intensiva
 import os # para criar pastas
 import tensorflow as tf # para redes neurais
+from matplotlib import pyplot as plt
+plt.style.use('ggplot')
 
 # criamos uma pasta para colocar os dados
 if not os.path.exists('tmp'):
@@ -81,6 +83,7 @@ with graph.as_default(): # abre o grafo para colocar operações e variáveis
 
 
 # abrimos a sessão tf
+d1_list, d2_list, d3_list, d4_list = [], [], [], []
 with tf.Session(graph=graph) as sess:
 	init.run() # iniciamos as variáveis
 	
@@ -97,9 +100,43 @@ with tf.Session(graph=graph) as sess:
 		summaries_str, _ = sess.run([summaries, optimizer], feed_dict=feed_dict)
 			
 		# a cada 10 iterações, salva os registros dos summaries
-		if step % 10 == 0:
-			file_writer.add_summary(summaries_str, step)
-			d1, d2, d3, d4 = sess.run([de_dW1, de_dW2, de_dW3, de_dW4], feed_dict=feed_dict)
-			print(d1.mean(), d2.mean(), d3.mean(), d4.mean())
-			
+		file_writer.add_summary(summaries_str, step)
+		d1, d2, d3, d4 = sess.run([de_dW1, de_dW2, de_dW3, de_dW4], feed_dict=feed_dict)
+		d1_list.append(d1)
+		d2_list.append(d2)
+		d3_list.append(d3)
+		d4_list.append(d4)
+
 file_writer.close() # fechamos o nó de escrever no disco.
+
+# Four axes, returned as a 2-d array
+f, axarr = plt.subplots(2, 2, sharex=True)
+axarr[0, 0].hist(d1_list[0].reshape((-1,1)), bins=40, histtype='stepfilled')
+axarr[0, 0].set_title('Grads. Layer 1')
+
+axarr[0, 1].hist(d2_list[0].reshape((-1,1)), bins=40, histtype='stepfilled')
+axarr[0, 1].set_title('Grads. Layer 2')
+
+axarr[1, 0].hist(d3_list[0].reshape((-1,1)), bins=40, histtype='stepfilled')
+axarr[1, 0].set_title('Grads. Layer 3')
+
+axarr[1, 1].hist(d4_list[0].reshape((-1,1)), bins=40, histtype='stepfilled')
+axarr[1, 1].set_title('Grads. Layer 4')
+
+plt.show()
+
+# Four axes, returned as a 2-d array
+f, axarr = plt.subplots(2, 2, sharex=True)
+axarr[0, 0].hist(d1_list[-1].reshape((-1,1)), bins=40, histtype='stepfilled')
+axarr[0, 0].set_title('Grads. Layer 1')
+
+axarr[0, 1].hist(d2_list[-1].reshape((-1,1)), bins=40, histtype='stepfilled')
+axarr[0, 1].set_title('Grads. Layer 2')
+
+axarr[1, 0].hist(d3_list[-1].reshape((-1,1)), bins=40, histtype='stepfilled')
+axarr[1, 0].set_title('Grads. Layer 3')
+
+axarr[1, 1].hist(d4_list[-1].reshape((-1,1)), bins=40, histtype='stepfilled')
+axarr[1, 1].set_title('Grads. Layer 4')
+
+plt.show()

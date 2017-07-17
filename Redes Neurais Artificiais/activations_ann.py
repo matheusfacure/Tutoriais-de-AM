@@ -15,6 +15,67 @@ if not os.path.exists('tmp'): # se a pasta não existir
 from tensorflow.examples.tutorials.mnist import input_data
 data = input_data.read_data_sets("tmp/", one_hot=False)
 
+## Funções de Ativação
+def sig(x, derivative=False):
+	if derivative:
+		return sig(x)*(1-sig(x))
+	
+	else:
+		return 1.0 / (1+np.exp(-x))
+
+def tanh(x, derivative=False):
+	if derivative:
+		return 1 - tanh(x) ** 2
+	
+	else:
+		return 2*sig(2*x) - 1
+
+
+def ReLU(x, derivative=False):
+	if derivative:
+		return (np.zeros_like(x) <= x).astype(np.float32)
+
+	else:
+		return np.maximum(np.zeros_like(x), x)
+
+
+def Leaky_ReLU(x, alpha = 0.2, derivative=False):
+	assert alpha < 1 and alpha > 0
+
+	if derivative:
+		less_than_zero = (np.zeros_like(x) >= x).astype(np.float32)
+		less_than_zero *= alpha
+		grt_than_zero = (np.zeros_like(x) < x).astype(np.float32)
+		return less_than_zero + grt_than_zero
+
+	else:
+		return np.maximum(x*alpha, x)
+
+
+def ELU(x, alpha=1, derivative=False):
+	if derivative:
+		less_than_zero = (np.zeros_like(x) >= x).astype(np.float32)
+		less_than_zero *= ELU(x)+alpha 
+		grt_than_zero = (np.zeros_like(x) < x).astype(np.float32)
+		return less_than_zero + grt_than_zero
+
+	else:
+		less_than_zero = (np.zeros_like(x) >= x).astype(np.float32)
+		less_than_zero *= (np.exp(x) - 1)*alpha
+		grt_than_zero = (np.zeros_like(x) < x).astype(np.float32)
+		grt_than_zero *= x 
+		return less_than_zero + grt_than_zero
+
+
+def plot_func_deriv(func, name):
+	i = np.linspace(-5, 5, 500)
+	x = func(i)
+	dx = func(i, derivative=True)
+	plt.plot(i, x, label=name, lw=3)
+	plt.plot(i, dx, label='Derivada')
+	plt.legend()
+	# plt.ylim([-2,3])
+	plt.show()
 
 def fully_conected_layer(inputs, n_neurons, activation=tf.nn.sigmoid):
 	'''

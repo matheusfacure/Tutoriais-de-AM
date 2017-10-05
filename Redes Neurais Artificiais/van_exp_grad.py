@@ -69,10 +69,10 @@ with graph.as_default(): # abre o grafo para colocar operações e variáveis
 
 	with tf.name_scope('Gradients'):
 		de_dW1, de_dW2, de_dW3, de_dW4  = tf.gradients(error, [W1, W2, W3, W4])
-		tf.summary.histogram('Grads1', de_dW1)
-		tf.summary.histogram('Grads2', de_dW2)
-		tf.summary.histogram('Grads3', de_dW3)
-		tf.summary.histogram('Grads4', de_dW4)
+		tf.summary.histogram('Derivs1', de_dW1)
+		tf.summary.histogram('Derivs2', de_dW2)
+		tf.summary.histogram('Derivs3', de_dW3)
+		tf.summary.histogram('Derivs4', de_dW4)
 	
 	# inicializador
 	init = tf.global_variables_initializer()
@@ -112,31 +112,31 @@ file_writer.close() # fechamos o nó de escrever no disco.
 # Four axes, returned as a 2-d array
 f, axarr = plt.subplots(2, 2, sharex=True)
 axarr[0, 0].hist(d1_list[0].reshape((-1,1)), bins=40, histtype='stepfilled')
-axarr[0, 0].set_title('Grads. Layer 1')
+axarr[0, 0].set_title('Derivs. Camada 1')
 
 axarr[0, 1].hist(d2_list[0].reshape((-1,1)), bins=40, histtype='stepfilled')
-axarr[0, 1].set_title('Grads. Layer 2')
+axarr[0, 1].set_title('Derivs. Camada 2')
 
 axarr[1, 0].hist(d3_list[0].reshape((-1,1)), bins=40, histtype='stepfilled')
-axarr[1, 0].set_title('Grads. Layer 3')
+axarr[1, 0].set_title('Derivs. Camada 3')
 
 axarr[1, 1].hist(d4_list[0].reshape((-1,1)), bins=40, histtype='stepfilled')
-axarr[1, 1].set_title('Grads. Layer 4')
+axarr[1, 1].set_title('Derivs. Camada 4')
 
 plt.show()
 
 # Four axes, returned as a 2-d array
 f, axarr = plt.subplots(2, 2, sharex=True)
 axarr[0, 0].hist(d1_list[-1].reshape((-1,1)), bins=40, histtype='stepfilled')
-axarr[0, 0].set_title('Grads. Layer 1')
+axarr[0, 0].set_title('Derivs. Camada 1')
 
 axarr[0, 1].hist(d2_list[-1].reshape((-1,1)), bins=40, histtype='stepfilled')
-axarr[0, 1].set_title('Grads. Layer 2')
+axarr[0, 1].set_title('Derivs. Camada 2')
 
 axarr[1, 0].hist(d3_list[-1].reshape((-1,1)), bins=40, histtype='stepfilled')
-axarr[1, 0].set_title('Grads. Layer 3')
+axarr[1, 0].set_title('Derivs. Camada 3')
 
 axarr[1, 1].hist(d4_list[-1].reshape((-1,1)), bins=40, histtype='stepfilled')
-axarr[1, 1].set_title('Grads. Layer 4')
+axarr[1, 1].set_title('Derivs. Camada 4')
 
 plt.show()
